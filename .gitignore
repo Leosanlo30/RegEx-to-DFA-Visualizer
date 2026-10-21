@@ -1,0 +1,11 @@
+# Build output
+target/
+out/
+
+# IntelliJ (configuración local de cada quien)
+.idea/workspace.xml
+.idea/shelf/
+*.iws
+
+# macOS
+.DS_Store

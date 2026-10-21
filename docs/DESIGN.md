@@ -166,7 +166,7 @@ Values: `SÍMBOLO`, `EPSILON`, `UNIÓN`, `CONCAT`, `KLEENE`, `PAR_IZQ`, `PAR_DER
 | `+` | `guardar(r : ResultadoConversion, archivo : File)` |
 | `+` | `cargar(archivo : File)` |
 
-### `excepciones` — Custom program errors
+### `Exceptions` — Custom program errors
 
 | Class | Attributes |
 |-------|------------|

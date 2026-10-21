@@ -2,7 +2,7 @@
 
 UML diagram of the **RegEx → DFA Visualizer** system, organized by package:
 
-- `exceptions`
+- `Exceptions`
 - `ui`
 - `persistence`
 - `logic`
@@ -222,7 +222,7 @@ classDiagram
 
 ---
 
-## Package `exceptions`
+## Package `Exceptions`
 
 ```mermaid
 classDiagram

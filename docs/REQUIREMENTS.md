@@ -56,7 +56,7 @@ Solving finite-automaton exercises is a reasoning-heavy process: starting from a
 | ID | Non-functional requirement |
 |----|----------------------------|
 | **RNF01** | The application must be developed in Java 21, applying the OOP principles: encapsulation, composition, inheritance, polymorphism, and interfaces. |
-| **RNF02** | The code must be split into packages: `interfaz`, `logica`, `modelo`, `persistencia`, and `excepciones`. The model and logic layers must not depend on the UI. |
+| **RNF02** | The code must be split into packages: `interfaz`, `logica`, `modelo`, `persistencia`, and `Exceptions`. The model and logic layers must not depend on the UI. |
 | **RNF03** | The system must not crash on invalid input or file failures; such situations must be handled with custom exceptions. |
 | **RNF04** | The application must have a desktop GUI developed in Swing. |
 | **RNF05** | Error messages must be in Spanish and understandable to the user, without exposing internal program traces. |
