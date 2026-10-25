@@ -5,11 +5,11 @@ import java.util.Set;
 
 public abstract class Automaton {
     //atributos
-    private State initial_state;
-    private Set<State> states;
-    private Set<Character> alphabet;
-    private Set<State> final_states;
-
+    protected State initial_state;
+    protected Set<State> states;
+    protected Set<Character> alphabet;
+    protected Set<State> final_states;
+    protected int nextId;
 
     //constructor
     public Automaton(State initial_state, Set<State> final_states, Set<Character> alphabet, Set<State> states) {
@@ -22,7 +22,7 @@ public abstract class Automaton {
     //getter and setters
 
     public State getInitial_state() {
-        return initial_state;
+        return this.initial_state;
     }
 
     public void setInitial_state(State initial_state) {
@@ -51,6 +51,33 @@ public abstract class Automaton {
 
     public void setFinal_states(Set<State> final_states) {
         this.final_states = final_states;
+    }
+
+    //metodos
+
+    //
+    public State newState(){
+        State s = new State(nextId++);
+        addState(s);
+        return s;
+    }
+
+    public void addState(State s){
+        if (s==null) System.out.println("Alerta es null (por ahora)"); //agregar error cuando se implementen lso errores
+        else states.add(s);
+    }
+
+    public void markFinals(State s){
+        if (states.contains(s)) final_states.add(s);
+        else System.out.println("Lanza error"); //implementar cuando ya etsen los errores
+    }
+
+    public boolean isFinal(State s){
+        return final_states.contains(s);
+    }
+
+    public boolean hasState(State s) {
+        return states.contains(s);
     }
 
 

@@ -19,11 +19,14 @@ public class State {
 
     //equals
     public boolean equals(Object o){
-        return true; //por ahora
+       if (this == o) return true;
+       else if (o == null || getClass() != o.getClass()) return false;
+       State otro = (State)o;
+       return id == otro.id;
     }
 
     public int hashCode(){
-        return 0; //por ahora
+        return Integer.hashCode(id);
     }
 
 
