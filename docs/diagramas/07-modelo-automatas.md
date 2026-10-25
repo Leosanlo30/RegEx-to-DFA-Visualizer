@@ -1,61 +1,16 @@
-# 7. Modelo: autómatas (`model/automata`)
+# 7. Métodos del modelo de autómatas
 
-```mermaid
-classDiagram
-    class State {
-        -int id
-        -String label
-        +getId() int
-        +equals(Object) boolean
-        +hashCode() int
-    }
-    class Transition {
-        -State from
-        -Character symbol
-        -State to
-        +isEpsilon() boolean
-    }
-    class Automaton {
-        <<abstract>>
-        #Set~State~ states
-        #Set~Character~ alphabet
-        #List~Transition~ transitions
-        #State initial
-        #Set~State~ finals
-        +addState() State
-        +addTransition(State, Character, State)
-        +setInitial(State)
-        +addFinal(State)
-        +isFinal(State) boolean
-        +getTransitionsFrom(State) List~Transition~
-    }
-    class NFA {
-        +addEpsilon(State, State)
-    }
-    class DFA {
-        -Map transitionTable
-        +next(State, char) State
-        +accepts(String) boolean
-        +isComplete() boolean
-        +complete() State
-        +removeUnreachable()
-    }
-    Automaton <|-- NFA
-    Automaton <|-- DFA
-    Automaton "1" o-- "*" State
-    Automaton "1" o-- "*" Transition
-    Transition --> State
-```
+Métodos de `State`, `Automaton`, `NFA` y `DFA` según [UML.md](../UML.md).
+Los demás métodos de estas clases están en otros diagramas:
 
-> En el código, ε es `symbol == null` (o la constante `Transition.EPSILON`).
+- `NFA.epsilonClosure` y `NFA.move`: [04-subconjuntos.md](04-subconjuntos.md)
+- `accepts` de `NFA` y `DFA`: [06-simulacion-dfa.md](06-simulacion-dfa.md)
 
----
-
-## 7.1 `State.equals(Object o)`
+## 7.1 `State.equals(o)` y `hashCode()`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B{¿o es este mismo objeto?}
+    A([Inicio equals]) --> B{¿o es este mismo objeto?}
     B -- Sí --> T[/Retornar true/]
     B -- No --> C{¿o es null o no es State?}
     C -- Sí --> F[/Retornar false/]
@@ -66,63 +21,31 @@ flowchart TD
     F --> Z
 ```
 
-`hashCode()` retorna el hash de `id`, para que los estados funcionen en `Set` y `Map`.
+`hashCode()` retorna `Integer.hashCode(id)`. Es obligatorio sobrescribir los dos para que `State` funcione en `Set` y `Map`.
 
-## 7.2 `Transition.isEpsilon()`
-
-```mermaid
-flowchart TD
-    A([Inicio]) --> B{¿symbol es null?}
-    B -- Sí --> T[/Retornar true/]
-    B -- No --> F[/Retornar false/]
-    T --> Z([Fin])
-    F --> Z
-```
-
-## 7.3 `Automaton.addState()`
+## 7.2 `Automaton.addState(s)`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B[s ← nuevo State con id = contador]
-    B --> C[contador ← contador + 1]
-    C --> D[agregar s a states]
-    D --> E[/Retornar s/]
-    E --> Z([Fin])
-```
-
-## 7.4 `Automaton.addTransition(from, symbol, to)`
-
-```mermaid
-flowchart TD
-    A([Inicio]) --> B{¿from y to pertenecen a states?}
-    B -- No --> ERR[/Lanzar IllegalArgumentException/]
-    B -- Sí --> C[t ← nueva Transition from, symbol, to]
-    C --> D[agregar t a transitions]
-    D --> E{¿symbol es null?}
-    E -- No --> F[agregar symbol a alphabet]
-    E -- Sí --> G
-    F --> G[/Fin del método/]
-    G --> Z([Fin])
+    A([Inicio]) --> B{¿s es null?}
+    B -- Sí --> ERR[/Lanzar IllegalArgumentException/]
+    B -- No --> C[agregar s a states]
+    C --> Z([Fin])
     ERR --> Z
 ```
 
-`NFA.addEpsilon(from, to)` solo llama a `addTransition(from, null, to)`.
-
-## 7.5 `Automaton.setInitial(s)` y `addFinal(s)`
+## 7.3 `Automaton.markFinal(s)`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B{¿s pertenece a states?}
+    A([Inicio]) --> B{¿states contiene s?}
     B -- No --> ERR[/Lanzar IllegalArgumentException/]
-    B -- Sí --> C{¿Qué método?}
-    C -- setInitial --> D[initial ← s]
-    C -- addFinal --> E[agregar s a finals]
-    D --> Z([Fin])
-    E --> Z
+    B -- Sí --> C[agregar s a finals]
+    C --> Z([Fin])
     ERR --> Z
 ```
 
-## 7.6 `Automaton.isFinal(s)`
+## 7.4 `Automaton.isFinal(s)`
 
 ```mermaid
 flowchart TD
@@ -133,90 +56,88 @@ flowchart TD
     F --> Z
 ```
 
-## 7.7 `Automaton.getTransitionsFrom(s)`
+---
+
+## 7.5 `NFA.newState()`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B[resultado ← lista vacía]
-    B --> C{¿quedan transiciones t?}
-    C -- No --> R[/Retornar resultado/]
-    C -- Sí --> D{¿t.from = s?}
-    D -- Sí --> E[agregar t a resultado]
-    D -- No --> C
-    E --> C
-    R --> Z([Fin])
+    A([Inicio]) --> B[s ← new State contador]
+    B --> C[contador ← contador + 1]
+    C --> D[addState s]
+    D --> E[/Retornar s/]
+    E --> Z([Fin])
+```
+
+## 7.6 `NFA.addTransition(src, c, dst)`
+
+`delta: Map<State, Map<Character, Set<State>>>` — un mismo símbolo puede ir a varios estados.
+
+```mermaid
+flowchart TD
+    A([Inicio]) --> B{¿states contiene src y dst?}
+    B -- No --> ERR[/Lanzar IllegalArgumentException/]
+    B -- Sí --> C{¿delta tiene src?}
+    C -- No --> D[delta src ← nuevo Map]
+    C -- Sí --> E
+    D --> E{¿delta src tiene c?}
+    E -- No --> F[delta src, c ← nuevo Set]
+    E -- Sí --> G
+    F --> G[agregar dst a delta src, c]
+    G --> H{¿c ≠ EPSILON?}
+    H -- Sí --> I[agregar c a alphabet]
+    H -- No --> Z([Fin])
+    I --> Z
+    ERR --> Z
 ```
 
 ---
 
-## 7.8 `DFA.addTransition(from, symbol, to)` — sobrescrito
+## 7.7 `DFA.addTransition(src, c, dst)`
 
-En un DFA no puede haber ε ni dos transiciones con el mismo símbolo desde un estado.
+`delta: Map<State, Map<Character, State>>` — cada símbolo va a **un solo** estado.
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B{¿symbol es null?}
-    B -- Sí --> ERR1[/Lanzar IllegalArgumentException:<br/>un DFA no admite ε/]
-    B -- No --> C{¿transitionTable ya tiene<br/>from con symbol?}
-    C -- Sí --> ERR2[/Lanzar IllegalStateException:<br/>no determinista/]
-    C -- No --> D[super.addTransition from, symbol, to]
-    D --> E[transitionTable from, symbol ← to]
-    E --> Z([Fin])
-    ERR1 --> Z
+    A([Inicio]) --> B{¿states contiene src y dst?}
+    B -- No --> ERR[/Lanzar IllegalArgumentException/]
+    B -- Sí --> C{¿delta tiene src?}
+    C -- No --> D[delta src ← nuevo Map]
+    C -- Sí --> E
+    D --> E{"¿delta src ya tiene c<br/>con un destino ≠ dst?"}
+    E -- Sí --> ERR2[/Lanzar IllegalStateException:<br/>dejaría de ser determinista/]
+    E -- No --> F[delta src, c ← dst<br/>agregar c a alphabet]
+    F --> Z([Fin])
+    ERR --> Z
     ERR2 --> Z
 ```
 
-## 7.9 `DFA.next(s, c)`
+## 7.8 `DFA.transition(s, c)`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B{¿transitionTable tiene s con c?}
-    B -- Sí --> C[/Retornar estado destino/]
+    A([Inicio]) --> B{¿delta tiene s Y<br/>delta s tiene c?}
+    B -- Sí --> C[/Retornar delta s, c/]
     B -- No --> D[/Retornar null/]
     C --> Z([Fin])
     D --> Z
 ```
 
-`DFA.accepts(w)` usa `next` en un ciclo; su diagrama está en [06-simulacion-dfa.md](06-simulacion-dfa.md).
+## 7.9 `DFA.complete()`
 
-## 7.10 `DFA.isComplete()`
-
-```mermaid
-flowchart TD
-    A([Inicio]) --> B{¿quedan estados s?}
-    B -- No --> T[/Retornar true/]
-    B -- Sí --> C{¿quedan símbolos c<br/>del alfabeto para s?}
-    C -- No --> B
-    C -- Sí --> D{¿next s, c es null?}
-    D -- Sí --> F[/Retornar false/]
-    D -- No --> C
-    T --> Z([Fin])
-    F --> Z
-```
-
-## 7.11 `DFA.complete()` — agrega el estado sumidero
+Deja `transition` como función total agregando un estado **sumidero**.
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B{¿isComplete?}
-    B -- Sí --> N[/Retornar null:<br/>no hizo falta sumidero/]
-    B -- No --> C[sumidero ← addState]
-    C --> D[Para cada estado s, incluido el sumidero,<br/>y cada símbolo c del alfabeto:<br/>si next s, c es null, agregar s —c→ sumidero]
-    D --> E[/Retornar sumidero/]
-    N --> Z([Fin])
-    E --> Z
-```
-
-## 7.12 `DFA.removeUnreachable()`
-
-```mermaid
-flowchart TD
-    A([Inicio]) --> B[alcanzables ← conjunto con initial<br/>pila ← initial]
-    B --> C{¿pila vacía?}
-    C -- No --> D[s ← pila.pop]
-    D --> E[Por cada transición s —c→ t:<br/>si t no está en alcanzables,<br/>agregarlo y hacer pila.push t]
-    E --> C
-    C -- Sí --> F[Quitar de states y finals<br/>los estados no alcanzables]
-    F --> G[Quitar transiciones cuyo origen<br/>o destino fue eliminado]
-    G --> Z([Fin])
+    A([Inicio]) --> B[faltan ← false]
+    B --> C[Revisar cada estado s y símbolo c:<br/>si transition s, c es null, faltan ← true]
+    C --> D{¿faltan?}
+    D -- No --> Z([Fin])
+    D -- Sí --> E[sumidero ← new State con id = mayor id + 1<br/>addState sumidero]
+    E --> F{¿quedan pares s, c<br/>incluido el sumidero?}
+    F -- No --> Z
+    F -- Sí --> G{¿transition s, c es null?}
+    G -- Sí --> H[addTransition s, c, sumidero]
+    G -- No --> F
+    H --> F
 ```
