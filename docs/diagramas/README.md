@@ -15,3 +15,5 @@ Las clases y métodos siguen [docs/UML.md](../UML.md); la sintaxis y el método 
 | 7 | [07-modelo-automatas.md](07-modelo-automatas.md) | `State`, `Automaton`, `NFA.newState/addTransition`, `DFA.addTransition/transition/complete` |
 
 Ejemplo de referencia para pruebas: `(a|b)*abb`.
+
+Explicación de cada método: [EXPLICACIONES.md](EXPLICACIONES.md).
