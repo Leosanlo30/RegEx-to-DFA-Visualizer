@@ -11,5 +11,7 @@ Diagramas en [Mermaid](https://mermaid.js.org/) (GitHub los renderiza automátic
 | 4 | [04-subconjuntos.md](04-subconjuntos.md) | ε-closure, move, subconjuntos → DFA | `SubsetConstruction` |
 | 5 | [05-minimizacion-hopcroft.md](05-minimizacion-hopcroft.md) | Minimización de Hopcroft | `DfaMinimizer` |
 | 6 | [06-simulacion-dfa.md](06-simulacion-dfa.md) | Aceptación de cadenas | `DFA` |
+| 7 | [07-modelo-automatas.md](07-modelo-automatas.md) | Métodos de los autómatas | `State`, `Transition`, `Automaton`, `NFA`, `DFA` |
+| 8 | [08-modelo-ast.md](08-modelo-ast.md) | Métodos del AST (Composite + Visitor) | `RegexNode` y subclases |
 
 Ejemplo de referencia para pruebas: `(a|b)*abb`.
