@@ -167,9 +167,8 @@ Recibe el `NFA` compartido, donde agrega sus estados y transiciones, y retorna s
 ### `Automaton.isFinal(s)` → `boolean`
 - Retorna `finals.contains(s)`. Depende de que `equals` y `hashCode` estén bien implementados.
 
-### `NFA.newState()` → `State`
-- **Qué hace:** crea un estado con `id` igual al contador, incrementa el contador, lo agrega con `addState` y lo retorna.
-- **Por qué:** garantiza `id`s únicos. Los nodos de Thompson nunca hacen `new State(...)` directamente.
+### `newState()`
+- Ahora está en `Automaton`; ver la sección 8.
 
 ### `NFA.addTransition(src, c, dst)` → `void`
 - **Qué hace:** guarda `src --c--> dst` en `delta: Map<State, Map<Character, Set<State>>>`.
@@ -187,3 +186,35 @@ Recibe el `NFA` compartido, donde agrega sus estados y transiciones, y retorna s
 - **Qué hace:** vuelve `transition` una función **total**: toda combinación (estado, símbolo) tiene un destino.
 - **Cómo:** si falta alguna transición, crea un estado **sumidero** (no final) y dirige ahí todas las que faltan, incluidas las del propio sumidero, que apuntan a sí mismo.
 - **Por qué:** la tabla de pares distinguibles necesita consultar `transition(p, c)` para todo par y símbolo. El sumidero representa "esta cadena ya no puede ser aceptada".
+
+---
+
+## 8. Métodos del modelo que faltaban — [08-modelo-faltantes.md](08-modelo-faltantes.md)
+
+### `Automaton()` (constructor vacío)
+- **Qué hace:** crea un autómata sin estados, con todos los conjuntos vacíos y `nextId = 0`.
+- **Por qué:** Thompson construye el NFA desde cero con `newState()`. Si los conjuntos fueran `null`, el primer `addState` lanzaría `NullPointerException`.
+
+### `Automaton(initial, finals, alphabet, states)`
+- **Qué hace:** crea un autómata con conjuntos que ya existen (lo usan `SubsetConstructor` y `Minimizer`).
+- **Cómo:** valida que nada sea `null` y que `initial` y los `finals` pertenezcan a `states`. Después pone `nextId` en el mayor `id` + 1.
+- **Por qué:** si `nextId` empezara en 0, `newState()` (por ejemplo el sumidero de `complete()`) podría repetir el `id` de un estado que ya existe. Como `equals` compara por `id`, el `Set` lo tomaría como duplicado.
+
+### `Automaton.newState()` → `State`
+- **Qué hace:** crea un estado con `id = nextId`, incrementa `nextId`, lo agrega con `addState` y lo retorna.
+- **Por qué está en `Automaton` y no en `NFA`:** la necesitan los dos autómatas, `NFA` en Thompson y `DFA` en `complete()`. Así se escribe una sola vez (**herencia**).
+
+### `Automaton.hasState(s)` → `boolean`
+- Retorna `states.contains(s)`. Lo usan `addTransition` y `markFinal` para validar antes de modificar.
+
+### `Fragment(start, end)`, `getStart()`, `getEnd()`
+- **Qué hace:** guarda el par (entrada, salida) que regresa cada `buildNFA`.
+- **Por qué no tiene setters:** un fragmento ya construido no cambia. Los nodos padres solo leen `start` y `end` para conectarlo con ε.
+
+### `State.toString()` → `String`
+- Retorna `"q" + id`. Con esto la tabla y el diagrama muestran nombres como `q0` y `q1` sin repetir el formato en la vista.
+
+### Constructores de `SymbolNode`, `UnionNode`, `ConcatenationNode`, `KleeneNode`, `EpsilonNode`
+- **Qué hacen:** guardan los hijos (o el símbolo). `EpsilonNode` no guarda nada.
+- **Por qué validan:** un hijo `null` haría fallar `buildNFA` mucho después y lejos del error real. Es mejor fallar en el momento en que se construye el árbol. `SymbolNode` solo acepta letras y dígitos, que es el alfabeto de RF02.
+- **Ejemplo:** el árbol de `(a|b)*abb` está dibujado al final de [08-modelo-faltantes.md](08-modelo-faltantes.md).

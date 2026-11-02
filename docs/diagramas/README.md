@@ -12,7 +12,8 @@ Las clases y métodos siguen [docs/UML.md](../UML.md); la sintaxis y el método 
 | 4 | [04-subconjuntos.md](04-subconjuntos.md) | `NFA.epsilonClosure`, `NFA.move`, `SubsetConstructor.determinize` |
 | 5 | [05-minimizacion.md](05-minimizacion.md) | `Minimizer.minimize` (tabla de pares distinguibles) |
 | 6 | [06-simulacion-dfa.md](06-simulacion-dfa.md) | `DFA.accepts`, `NFA.accepts` |
-| 7 | [07-modelo-automatas.md](07-modelo-automatas.md) | `State`, `Automaton`, `NFA.newState/addTransition`, `DFA.addTransition/transition/complete` |
+| 7 | [07-modelo-automatas.md](07-modelo-automatas.md) | `State`, `Automaton`, `NFA.addTransition`, `DFA.addTransition/transition/complete` |
+| 8 | [08-modelo-faltantes.md](08-modelo-faltantes.md) | Constructores de `Automaton`, `newState`, `hasState`, `Fragment`, `State.toString`, constructores de los `RegexNode` |
 
 Ejemplo de referencia para pruebas: `(a|b)*abb`.
 

@@ -3,6 +3,7 @@
 Métodos de `State`, `Automaton`, `NFA` y `DFA` según [UML.md](../UML.md).
 Los demás métodos de estas clases están en otros diagramas:
 
+- Constructores de `Automaton`, `hasState` y `newState`: [08-modelo-faltantes.md](08-modelo-faltantes.md)
 - `NFA.epsilonClosure` y `NFA.move`: [04-subconjuntos.md](04-subconjuntos.md)
 - `accepts` de `NFA` y `DFA`: [06-simulacion-dfa.md](06-simulacion-dfa.md)
 
@@ -58,16 +59,9 @@ flowchart TD
 
 ---
 
-## 7.5 `NFA.newState()`
+## 7.5 `newState()`
 
-```mermaid
-flowchart TD
-    A([Inicio]) --> B[s ← new State contador]
-    B --> C[contador ← contador + 1]
-    C --> D[addState s]
-    D --> E[/Retornar s/]
-    E --> Z([Fin])
-```
+En el código, `newState()` vive en `Automaton` (lo usan `NFA` en Thompson y `DFA.complete()` para el sumidero). Su diagrama está en [08-modelo-faltantes.md §8.3](08-modelo-faltantes.md#83-automatonnewstate).
 
 ## 7.6 `NFA.addTransition(src, c, dst)`
 
@@ -133,7 +127,7 @@ flowchart TD
     B --> C[Revisar cada estado s y símbolo c:<br/>si transition s, c es null, faltan ← true]
     C --> D{¿faltan?}
     D -- No --> Z([Fin])
-    D -- Sí --> E[sumidero ← new State con id = mayor id + 1<br/>addState sumidero]
+    D -- Sí --> E[sumidero ← newState]
     E --> F{¿quedan pares s, c<br/>incluido el sumidero?}
     F -- No --> Z
     F -- Sí --> G{¿transition s, c es null?}
