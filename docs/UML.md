@@ -171,7 +171,10 @@ classDiagram
         #alphabet: Set~Character~
         #initial: State
         #finals: Set~State~
+        #nextId: int
+        +newState() State
         +addState(s: State) void
+        +hasState(s: State) boolean
         +markFinal(s: State) void
         +isFinal(s: State) boolean
         +accepts(input: String) boolean
@@ -179,7 +182,6 @@ classDiagram
     class NFA {
         +EPSILON: char = 'ε'
         -delta: Map~State, Map~Character, Set~State~~~
-        +newState() State
         +addTransition(src: State, c: char, dst: State) void
         +epsilonClosure(s: Set~State~) Set~State~
         +move(s: Set~State~, c: char) Set~State~
@@ -196,6 +198,7 @@ classDiagram
         -id: int
         +equals(o: Object) boolean
         +hashCode() int
+        +toString() String
     }
     class Fragment {
         -start: State
@@ -442,7 +445,10 @@ classDiagram
         #alphabet: Set~Character~
         #initial: State
         #finals: Set~State~
+        #nextId: int
+        +newState() State
         +addState(s: State) void
+        +hasState(s: State) boolean
         +markFinal(s: State) void
         +isFinal(s: State) boolean
         +accepts(input: String) boolean
@@ -450,7 +456,6 @@ classDiagram
     class NFA {
         +EPSILON: char = 'ε'
         -delta: Map~State, Map~Character, Set~State~~~
-        +newState() State
         +addTransition(src: State, c: char, dst: State) void
         +epsilonClosure(s: Set~State~) Set~State~
         +move(s: Set~State~, c: char) Set~State~
@@ -467,6 +472,7 @@ classDiagram
         -id: int
         +equals(o: Object) boolean
         +hashCode() int
+        +toString() String
     }
     class Fragment {
         -start: State
@@ -483,7 +489,7 @@ classDiagram
 | Class | Role |
 |---|---|
 | `Simulable` | Contract for accepting/rejecting input strings. |
-| `Automaton` | Common base: states, alphabet, initial and final states. |
+| `Automaton` | Common base: states, alphabet, initial and final states; `newState()` hands out unique ids for both NFA and DFA. |
 | `NFA` | Nondeterministic automaton with ε-transitions. |
 | `DFA` | Deterministic automaton; `transition` is a total function after `complete()`. |
 | `State` | Identity by `id`. |
