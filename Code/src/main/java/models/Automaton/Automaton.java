@@ -77,15 +77,14 @@ public abstract class Automaton implements Simul {
     }
     
     public void addState(State s) {
-        if (s == null) System.out.println("Illegal arg"); //implementar cuando este listo
+        if (s == null) throw new controllers.Exceptions.AutomatonException("El estado no puede ser null"); //manejo de errores
         states.add(s);
         if (s.getId() >= nextId) nextId = s.getId() + 1;
     }
     
     public void markFinals(State s) {
-        if (!states.contains(s)){
-            if (s == null) System.out.println("Illegal arg"); //implementar cuando este listo
-        }
+        if (!states.contains(s)) throw new controllers.Exceptions.AutomatonException("El estado no pertenece al autómata"); //manejo de errores 
+        
         final_states.add(s);
     }
 
