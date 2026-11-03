@@ -17,17 +17,28 @@ classDiagram
     direction LR
 
     %% ===== Package: exceptions =====
-    class Exception {
+    class RuntimeException {
         <<Java>>
     }
-    class RegexInvalidException {
+    class RegexSyntaxException {
+        -errortype: String
         -position: int
+        +getErrortype() String
+        +getPosition() int
+        +toString() String
     }
-    class CorruptFileException {
-        -path: String
+    class FileFormatException
+    class AutomatonException
+    class InvalidAlphabetException {
+        -invalidSymbol: char
+        +getInvalidSymbol() char
     }
-    Exception <|-- RegexInvalidException
-    Exception <|-- CorruptFileException
+    class InvalidPathException
+    RuntimeException <|-- RegexSyntaxException
+    RuntimeException <|-- FileFormatException
+    RuntimeException <|-- AutomatonException
+    RuntimeException <|-- InvalidAlphabetException
+    RuntimeException <|-- InvalidPathException
 
     %% ===== Package: ui =====
     class MainWindow {
@@ -226,23 +237,39 @@ classDiagram
 
 ```mermaid
 classDiagram
-    class Exception {
+    class RuntimeException {
         <<Java>>
     }
-    class RegexInvalidException {
+    class RegexSyntaxException {
+        -errortype: String
         -position: int
+        +getErrortype() String
+        +getPosition() int
+        +toString() String
     }
-    class CorruptFileException {
-        -path: String
+    class FileFormatException
+    class AutomatonException
+    class InvalidAlphabetException {
+        -invalidSymbol: char
+        +getInvalidSymbol() char
     }
-    Exception <|-- RegexInvalidException
-    Exception <|-- CorruptFileException
+    class InvalidPathException
+    RuntimeException <|-- RegexSyntaxException
+    RuntimeException <|-- FileFormatException
+    RuntimeException <|-- AutomatonException
+    RuntimeException <|-- InvalidAlphabetException
+    RuntimeException <|-- InvalidPathException
 ```
 
 | Class | Role |
 |---|---|
-| `RegexInvalidException` | Syntax error in the regular expression; carries the failing `position`. |
-| `CorruptFileException` | Error reading a persisted file; carries the `path`. |
+| `RegexSyntaxException` | Lexical or syntax error in the regular expression; carries the error type (`errortype`) and the failing `position`. |
+| `FileFormatException` | Persisted file with the wrong extension (not `.txt` / `.json`), empty or corrupt; can wrap the original cause. |
+| `AutomatonException` | Invalid operation on an automaton (unknown state, ε-transition or non-deterministic transition in a DFA, null fragment or tree child). |
+| `InvalidAlphabetException` | Symbol outside the alphabet (letters and digits); carries the `invalidSymbol`. |
+| `InvalidPathException` | Test string that cannot be walked on the automaton (contains a symbol outside its alphabet). |
+
+All of them extend `RuntimeException` (unchecked), so model methods don't need `throws` clauses; the UI catches the ones it needs to report.
 
 ---
 
