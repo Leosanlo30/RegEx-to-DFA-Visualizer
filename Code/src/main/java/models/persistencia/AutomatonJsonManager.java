@@ -1,4 +1,4 @@
-package persistencia;
+package models.persistencia;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
