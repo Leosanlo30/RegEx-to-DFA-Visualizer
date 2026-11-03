@@ -6,14 +6,24 @@ import models.Automaton.State;
 
 public class UnionNode extends RegexNode{
     //atributos
-    private RegexNode left;
-    private RegexNode right;
+    private final RegexNode left;
+    private final RegexNode right;
 
     public UnionNode(RegexNode left, RegexNode right) {
         if (left==null || right==null) System.out.println("Illegal error"); //implementar
         this.left = left;
         this.right = right;
     }
+
+    public RegexNode getLeft() {
+        return left;
+    }
+
+    public RegexNode getRight() {
+        return right;
+    }
+    
+    
 
     @Override
     public Fragment buildNFA(NFA nfa) {

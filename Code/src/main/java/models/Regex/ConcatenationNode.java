@@ -5,8 +5,8 @@ import models.Automaton.NFA;
 
 public class ConcatenationNode extends RegexNode{
     //atributos
-    private RegexNode left;
-    private RegexNode right;
+    private final RegexNode left;
+    private final RegexNode right;
 
     public ConcatenationNode(RegexNode left, RegexNode right) {
         if (left==null || right==null) System.out.println("Illegal error"); //implementar

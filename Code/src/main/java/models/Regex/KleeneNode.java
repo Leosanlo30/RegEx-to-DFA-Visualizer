@@ -6,7 +6,7 @@ import models.Automaton.State;
 
 public class KleeneNode extends RegexNode{
     //atributos
-    private RegexNode child;
+    private final RegexNode child;
 
     //construcor **implementar
 

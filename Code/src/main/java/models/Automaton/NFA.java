@@ -22,11 +22,6 @@ public class NFA extends Automaton{
 
     // getters and setters
 
-
-    public char getEPSILON() {
-        return EPSILON;
-    }
-
     public Map<State, Map<Character, Set<State>>> getDelta() {
         return delta;
     }
