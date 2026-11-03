@@ -6,9 +6,9 @@ public class Fragment{
     private State end;
 
     public Fragment(State start, State end) {
-        if(start==null || end==null){
-            System.out.println("Illegal Arg"); // implementar cuando
-        }
+        //manejo de errores
+        if(start==null || end==null) throw new controllers.Exceptions.AutomatonException("start y end del Fragment no pueden ser null");
+        
         this.start = start;
         this.end = end;
     }

@@ -9,7 +9,7 @@ public class ConcatenationNode extends RegexNode{
     private final RegexNode right;
 
     public ConcatenationNode(RegexNode left, RegexNode right) {
-        if (left==null || right==null) System.out.println("Illegal error"); //implementar
+        if (left==null || right==null) throw new controllers.Exceptions.AutomatonException("Los hijos de ConcatenationNode no pueden ser null");
         this.left = left;
         this.right = right;
     }

@@ -9,7 +9,7 @@ public class SymbolNode extends RegexNode{
 
     public SymbolNode(char symbol) {
         if(!Character.isLetterOrDigit(symbol)){
-            System.out.println("Simbolo invalido: "+ symbol); // implementar cuando ya este
+            throw new controllers.Exceptions.InvalidAlphabetException("Simbolo invalido: " + symbol, symbol);
         }
         this.symbol = symbol;
     }

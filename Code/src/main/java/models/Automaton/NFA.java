@@ -34,7 +34,7 @@ public class NFA extends Automaton{
     //metodos
 
     public void addTransition(State s , char c , State d){
-        if (!states.contains(s) || !states.contains(d)) System.out.println("Lanzar alerta de no existen");
+        if (!states.contains(s) || !states.contains(d)) throw new controllers.Exceptions.AutomatonException("El estado no pertenece al NFA");// manejo de errores
         else {
             delta.computeIfAbsent(s, k -> new HashMap<>())
                     .computeIfAbsent(c, k -> new HashSet<>())

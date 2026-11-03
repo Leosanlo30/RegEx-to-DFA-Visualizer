@@ -33,13 +33,13 @@ public class DFA extends Automaton{
     //metodos
 
     public void addTransition(State s, char c, State d) {
-        if (!hasState(s) || !hasState(d)) System.out.println("El estado no pertenece al DFA");
-
-        if (c == 'ε') System.out.println("DFA no admite transiciones ε");
+        //manejo de errores
+        if (!hasState(s) || !hasState(d)) throw new controllers.Exceptions.AutomatonException("El estado no pertenece al DFA");
+        if (c == 'ε') throw new controllers.Exceptions.AutomatonException("DFA no admite transiciones ε");
 
         Map<Character, State> froms = delta.computeIfAbsent(s, k -> new HashMap<>());
         State actual = froms.get(c);
-        if (actual != null && !actual.equals(d)) System.out.println("Ya existe una transición de " + s.getId() + " con '" + c + "'");
+        if (actual != null && !actual.equals(d)) throw new controllers.Exceptions.AutomatonException("Ya existe una transición de " + s.getId() + " con '" + c + "'");
         froms.put(c, d);
         alphabet.add(c);
     }

@@ -10,7 +10,7 @@ public class UnionNode extends RegexNode{
     private final RegexNode right;
 
     public UnionNode(RegexNode left, RegexNode right) {
-        if (left==null || right==null) System.out.println("Illegal error"); //implementar
+        if (left==null || right==null) throw new controllers.Exceptions.AutomatonException("Los hijos de UnionNode no pueden ser null");
         this.left = left;
         this.right = right;
     }

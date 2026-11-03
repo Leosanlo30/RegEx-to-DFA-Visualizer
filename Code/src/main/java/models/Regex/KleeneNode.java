@@ -11,7 +11,7 @@ public class KleeneNode extends RegexNode{
     //construcor **implementar
 
     public KleeneNode(RegexNode child) {
-        if(child==null) System.out.println("Illegal arg..."); //implementar cuando este
+        if(child==null) throw new controllers.Exceptions.AutomatonException("El hijo de KleeneNode no puede ser null");
         this.child = child;
     }
 
