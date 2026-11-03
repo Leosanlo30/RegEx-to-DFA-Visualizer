@@ -1,31 +1,30 @@
 package models.Automaton;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class NFA extends Automaton{
     //Automata Finito No determinista
-    private char EPSILON ='ε';
+    public static final char EPSILON ='ε';
     private Map<State, Map<Character, Set<State>>> delta;
 
-    //constructor
-    public NFA(State initial_state, Set<State> final_states, Set<Character> alphabet, Set<State> states, char EPSILON, Map<State, Map<Character, Set<State>>> delta) {
-        super(initial_state, final_states, alphabet, states);
-        this.EPSILON = EPSILON;
-        this.delta = delta;
+    //constructor 1 vacio
+    public NFA() {
+        super();
+        this.delta = new HashMap<>();
     }
+    
+    //constructor 2 
+    public NFA(State initial_state, Set<State> final_states, Set<Character> alphabet, Set<State> states, Map<State, Map<Character, Set<State>>> delta) {
+        super(initial_state, final_states, alphabet, states);
+        if(delta!=null) this.delta = delta;
+        else this.delta = new HashMap<>();
+    }
+    
 
     // getters and setters
 
 
     public char getEPSILON() {
         return EPSILON;
-    }
-
-    public void setEPSILON(char EPSILON) {
-        this.EPSILON = EPSILON;
     }
 
     public Map<State, Map<Character, Set<State>>> getDelta() {
@@ -48,6 +47,49 @@ public class NFA extends Automaton{
             if (c != EPSILON) alphabet.add(c);
         }
     }
+    
+    //destinos de s con c (o vacío si no hay)
+    private Set<State> targets(State s, char c) {
+        Map<Character, Set<State>> fila = delta.get(s);
+        if (fila == null) return Collections.emptySet();
+        return fila.getOrDefault(c, Collections.emptySet());
+    }
+
+    //Estados alcanzables con Epsilon
+    public Set<State> epsilonClosure(Set<State> set) {
+        Set<State> cierre = new HashSet<>(set);
+        Deque<State> pila = new ArrayDeque<>(set);
+        
+        while (!pila.isEmpty()) {
+            State q = pila.pop();
+            for (State t : targets(q, EPSILON)) {
+                if (cierre.add(t)) pila.push(t);
+            }
+        }
+        return cierre;
+    }
+
+    public Set<State> move(Set<State> set, char c) {
+        Set<State> res = new HashSet<>();
+        for (State q : set) {
+            res.addAll(targets(q, c));
+        }
+        return res;
+    }
+
+    @Override
+    public boolean accepts(String input) {
+        if (initial_state == null) return false;
+        Set<State> actuales = epsilonClosure(Set.of(initial_state));
+        for (char c : input.toCharArray()) {
+            actuales = epsilonClosure(move(actuales, c));
+            if (actuales.isEmpty()) return false;
+        }
+        for (State q : actuales) {
+            if (isFinal(q)) return true;
+        }
+        return false;
+}
 
 
 }

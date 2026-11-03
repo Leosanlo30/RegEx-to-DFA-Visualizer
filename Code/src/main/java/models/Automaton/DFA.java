@@ -1,16 +1,22 @@
 package models.Automaton;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class DFA extends Automaton{
     //Automata Finito Determinista
     //atributos
-    private Map<State, Map<Character, State>> delta; //delta es el conjunto de los estados y a quienes van ((q0,a)q1)
+    private Map<State, Map<Character, State>> delta; //delta es el conjunto de los estados y a quienes van (q0, (a, q1))
 
-    //constructor
+    //contructor vacio
+    public DFA(){
+        super();
+        this.delta = new HashMap<>();
+    }
+    
+    
+    //constructor 2
     public DFA(State initial_state, Set<State> final_states, Set<Character> alphabet, Set<State> states, Map<State, Map<Character, State>> delta) {
         super(initial_state, final_states, alphabet, states);
         this.delta = delta;
@@ -29,7 +35,7 @@ public class DFA extends Automaton{
     public void addTransition(State s, char c, State d) {
         if (!hasState(s) || !hasState(d)) System.out.println("El estado no pertenece al DFA");
 
-        if (c == 'ε') System.out.println("Un DFA no admite transiciones ε");
+        if (c == 'ε') System.out.println("DFA no admite transiciones ε");
 
         Map<Character, State> froms = delta.computeIfAbsent(s, k -> new HashMap<>());
         State actual = froms.get(c);
@@ -43,6 +49,7 @@ public class DFA extends Automaton{
         if (fila == null) return null; // si es null retorna null
         return fila.get(c);
     }
+    
 
     public void complete(){
         boolean faltan = false;
@@ -58,11 +65,22 @@ public class DFA extends Automaton{
 
         for (State s : states) {
             for (char c : alphabet) {
-                if (transition(s, c) == null) addTransition(s, c, sumidero); //estado sumidero
+                if (transition(s, c) == null) addTransition(s, c, sumidero);
 
             }
         }
     }
+    
+    @Override
+    public boolean accepts(String input) {
+        State actual = initial_state;
+        if (actual == null) return false;
+        for (char c : input.toCharArray()) {
+            actual = transition(actual, c);
+            if (actual == null) return false;
+        }
+        return isFinal(actual);
+}
 
 
 

@@ -1,22 +1,37 @@
 package models.Automaton;
 
-
+import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Automaton {
+public abstract class Automaton implements Simul {
     //atributos
     protected State initial_state;
     protected Set<State> states;
     protected Set<Character> alphabet;
     protected Set<State> final_states;
-    protected int nextId;
+    protected int nextId = 0;
 
-    //constructor
+    public Automaton() {
+        this.initial_state = null;
+        this.states = new HashSet<>();
+        this.final_states = new HashSet<>();
+        this.alphabet = new HashSet<>();
+        this.nextId = 0;
+    }
+        
+    
+    //constructor 2
     public Automaton(State initial_state, Set<State> final_states, Set<Character> alphabet, Set<State> states) {
         this.initial_state = initial_state;
         this.final_states = final_states;
         this.alphabet = alphabet;
         this.states = states;
+        this.nextId = 0;
+        for (State s : states) {
+            if (s.getId() >= nextId) {
+                nextId = s.getId() + 1;//siguiente ID
+            } 
+        }
     }
 
     //getter and setters
@@ -52,27 +67,29 @@ public abstract class Automaton {
     public void setFinal_states(Set<State> final_states) {
         this.final_states = final_states;
     }
-
+    
     //metodos
-
-    //
+    
     public State newState(){
-        State s = new State(nextId++);
-        addState(s);
-        return s;
+        State s = new State(nextId);
+            addState(s);
+            return s;
+    }
+    
+    public void addState(State s) {
+        if (s == null) System.out.println("Illegal arg"); //implementar cuando este listo
+        states.add(s);
+        if (s.getId() >= nextId) nextId = s.getId() + 1;
+    }
+    
+    public void markFinals(State s) {
+        if (!states.contains(s)){
+            if (s == null) System.out.println("Illegal arg"); //implementar cuando este listo
+        }
+        final_states.add(s);
     }
 
-    public void addState(State s){
-        if (s==null) System.out.println("Alerta es null (por ahora)"); //agregar error cuando se implementen lso errores
-        else states.add(s);
-    }
-
-    public void markFinals(State s){
-        if (states.contains(s)) final_states.add(s);
-        else System.out.println("Lanza error"); //implementar cuando ya etsen los errores
-    }
-
-    public boolean isFinal(State s){
+    public boolean isFinal(State s) {
         return final_states.contains(s);
     }
 
@@ -80,5 +97,8 @@ public abstract class Automaton {
         return states.contains(s);
     }
 
+    // cambia dependiendo del hijo NFA o DFA
+    @Override
+    public abstract boolean accepts(String input);
 
 }

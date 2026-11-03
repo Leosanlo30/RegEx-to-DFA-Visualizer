@@ -29,6 +29,12 @@ public class State {
         return Integer.hashCode(id);
     }
 
+    @Override
+    public String toString() {
+        return  "q" + id;
+    }
+
+    
 
 
 }
