@@ -18,6 +18,8 @@ public final class Theme {
     public static final Color MUTED = new Color(0x656D76);
     public static final Color EDGE = new Color(0x57606A);
     public static final Color ACCENT = new Color(0x0969DA);
+    public static final Color ACCENT_HOVER = new Color(0x0860C4);
+    public static final Color ACCENT_PRESSED = new Color(0x0757B0);
     public static final Color ACCENT_SOFT = new Color(0xDDF4FF);
     public static final Color ACCEPT = new Color(0x1A7F37);
     public static final Color REJECT = new Color(0xCF222E);
@@ -48,7 +50,14 @@ public final class Theme {
         UIManager.put("Component.focusWidth", 1);
         UIManager.put("Component.focusColor", ACCENT);
         UIManager.put("Component.focusedBorderColor", ACCENT);
+        // Botón principal (Convertir): azul sólido en todos sus estados, incluido cuando tiene el foco
         UIManager.put("Button.default.background", ACCENT);
+        UIManager.put("Button.default.focusedBackground", ACCENT);
+        UIManager.put("Button.default.hoverBackground", ACCENT_HOVER);
+        UIManager.put("Button.default.pressedBackground", ACCENT_PRESSED);
+        UIManager.put("Button.default.borderColor", ACCENT);
+        UIManager.put("Button.default.hoverBorderColor", ACCENT_HOVER);
+        UIManager.put("Button.default.focusedBorderColor", ACCENT_PRESSED);
         UIManager.put("Button.default.foreground", Color.WHITE);
         UIManager.put("Panel.background", BACKGROUND);
         UIManager.put("SplitPane.background", BACKGROUND);
@@ -68,9 +77,11 @@ public final class Theme {
         return bodyFont().deriveFont(Font.BOLD);
     }
 
+    // No usar deriveFont(float) sobre la fuente del sistema: en macOS pierde las letras de respaldo
+    // y se dibujan textos incompletos ("Ru d : oom"). FlatLaf ya define la versión pequeña correcta.
     public static Font smallFont() {
-        Font body = bodyFont();
-        return body.deriveFont(body.getSize2D() - 1f);
+        Font small = UIManager.getFont("small.font");
+        return small != null ? small : bodyFont();
     }
 
     public static Font monoFont(float size) {

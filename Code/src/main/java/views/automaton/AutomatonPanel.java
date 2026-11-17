@@ -160,14 +160,7 @@ public class AutomatonPanel extends JPanel {
     private void paintEdge(Graphics2D g, Edge edge) {
         Point2D a = positions.get(edge.from());
         Point2D b = positions.get(edge.to());
-        double dx = b.getX() - a.getX();
-        double dy = b.getY() - a.getY();
-        double length = Math.hypot(dx, dy);
-        // Normal "hacia arriba" para aristas hacia la derecha: las de regreso quedan abajo
-        double nx = dy / length;
-        double ny = -dx / length;
-        double bend = needsCurve(edge, a, b) ? CURVE_BEND * length : 0;
-        Point2D control = new Point2D.Double((a.getX() + b.getX()) / 2 + nx * bend, (a.getY() + b.getY()) / 2 + ny * bend);
+        Point2D control = controlPoint(edge);
         Point2D start = pointOnCircle(a, control);
         Point2D end = pointOnCircle(b, control);
 
@@ -176,6 +169,20 @@ public class AutomatonPanel extends JPanel {
         paintArrowHead(g, control, end);
         Point2D middle = quadPoint(start, control, end);
         paintEdgeLabel(g, edge.label(), middle.getX(), middle.getY());
+    }
+
+    // Punto de control de la curva; para aristas rectas es el punto medio
+    private Point2D controlPoint(Edge edge) {
+        Point2D a = positions.get(edge.from());
+        Point2D b = positions.get(edge.to());
+        double dx = b.getX() - a.getX();
+        double dy = b.getY() - a.getY();
+        double length = Math.hypot(dx, dy);
+        // Normal "hacia arriba" para aristas hacia la derecha: las de regreso quedan abajo
+        double nx = dy / length;
+        double ny = -dx / length;
+        double bend = needsCurve(edge, a, b) ? CURVE_BEND * length : 0;
+        return new Point2D.Double((a.getX() + b.getX()) / 2 + nx * bend, (a.getY() + b.getY()) / 2 + ny * bend);
     }
 
     // Curva la arista si hay una de regreso o si la línea recta atravesaría otro estado
@@ -291,6 +298,12 @@ public class AutomatonPanel extends JPanel {
             Rectangle2D node = new Rectangle2D.Double(p.getX() - RADIUS * LOOP_WIDTH, p.getY() - RADIUS * LOOP_HEIGHT,
                     RADIUS * LOOP_WIDTH * 2, RADIUS * (LOOP_HEIGHT + 1));
             bounds = bounds == null ? node : bounds.createUnion(node);
+        }
+        // Incluye la parte más alejada de cada curva (y su etiqueta) para centrar bien el dibujo
+        for (Edge edge : edges) {
+            if (edge.from().equals(edge.to())) continue;
+            Point2D middle = quadPoint(positions.get(edge.from()), controlPoint(edge), positions.get(edge.to()));
+            bounds.add(new Rectangle2D.Double(middle.getX() - RADIUS / 2, middle.getY() - RADIUS / 2, RADIUS, RADIUS));
         }
         Point2D initial = positions.get(dfa.getInitial_state());
         if (initial != null) bounds.add(initial.getX() - RADIUS - INITIAL_ARROW_LENGTH, initial.getY());
