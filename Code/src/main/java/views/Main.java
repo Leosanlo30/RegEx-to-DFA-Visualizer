@@ -1,18 +1,20 @@
 package views;
 
-import javax.swing.JFrame;
+import controllers.SampleConverter;
 import javax.swing.SwingUtilities;
 
 public class Main {
 
     public static void main(String[] args) {
+        // En macOS el menú va en la barra superior del sistema
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("apple.awt.application.name", "Regex DFA Visualizer");
+
         SwingUtilities.invokeLater(() -> {
-            // TODO: reemplazar por VentanaPrincipal
-            JFrame ventana = new JFrame("Regex DFA Visualizer");
-            ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            ventana.setSize(900, 600);
-            ventana.setLocationRelativeTo(null);
-            ventana.setVisible(true);
+            Theme.install();
+            // TODO: reemplazar SampleConverter por el convertidor real cuando esté listo
+            MainWindow window = new MainWindow(new SampleConverter());
+            window.setVisible(true);
         });
     }
 }

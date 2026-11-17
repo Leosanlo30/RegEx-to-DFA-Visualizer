@@ -12,9 +12,18 @@
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Clase que ejecutan "mvn exec:java" y el botón Run de NetBeans -->
+        <exec.mainClass>views.Main</exec.mainClass>
     </properties>
 
     <dependencies>
+        <!-- Look and Feel moderno para Swing -->
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.5.4</version>
+        </dependency>
+
         <!-- RepositorioJson: guardar/cargar conversiones -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
