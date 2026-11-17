@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Si llega un push nuevo a la misma rama, cancela la ejecución anterior
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & test (Java 21)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Code
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: Code/pom.xml
+
+      # Compila, corre los tests, genera la cobertura y arma el .jar ejecutable
+      - name: Build and test
+        run: mvn -B verify -Djava.awt.headless=true
+
+      - name: Coverage summary
+        if: always() && hashFiles('Code/target/site/jacoco/jacoco.csv') != ''
+        run: |
+          {
+            echo "### Cobertura de tests (líneas)"
+            echo "| Paquete | Cubiertas | Total | % |"
+            echo "|---|---:|---:|---:|"
+            awk -F, 'NR > 1 { missed[$2] += $8; covered[$2] += $9 }
+              END {
+                for (p in covered) {
+                  total = missed[p] + covered[p]; allMissed += missed[p]; allCovered += covered[p]
+                  printf "| %s | %d | %d | %.0f%% |\n", p, covered[p], total, total ? 100 * covered[p] / total : 0
+                }
+                all = allMissed + allCovered
+                printf "| **Total** | **%d** | **%d** | **%.0f%%** |\n", allCovered, all, all ? 100 * allCovered / all : 0
+              }' target/site/jacoco/jacoco.csv
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            Code/target/surefire-reports/
+            Code/target/site/jacoco/
+          if-no-files-found: ignore
