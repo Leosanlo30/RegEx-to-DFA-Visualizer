@@ -7,5 +7,10 @@ out/
 .idea/shelf/
 *.iws
 
+# NetBeans (configuración local de cada quien)
+nbactions.xml
+nb-configuration.xml
+nbproject/private/
+
 # macOS
 .DS_Store
